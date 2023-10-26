@@ -1,13 +1,13 @@
 # Rhino-to-blender
-A plug-in for rhino and blender to exchange models with each other！
-Please refer to the diagram below for specific settings!
+
+Quickly export Rhino models to Blender and retain the layer structure in Rhino. The layers in Rhino will automatically be converted into collections or parent empty objects in Blender!
 
 ![Snipaste_2023-10-27_01-59-00](https://github.com/chenpaner/Rhino-to-blender/assets/107256886/ff41772d-5633-4963-aa2d-79d18d7a957f)
 
+Installation
 
 中文：
 1,先安装Blender端的插件，安装后复制插件里的assets文件夹路径！
-
 
 2，安装rhino里的插件
       拖动rename_obj_bylayer.rhp到rhino里就行了
