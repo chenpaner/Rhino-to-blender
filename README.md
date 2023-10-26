@@ -1,7 +1,60 @@
 # Rhino-to-blender
 A plug-in for rhino and blender to exchange models with each other！
 Please refer to the diagram below for specific settings!
-![Snipaste_2023-02-24_00-04-18](https://user-images.githubusercontent.com/107256886/220963673-5a1cc31a-f890-4cc6-b452-70109a3e72e5.png)
-![Snipaste_2023-02-24_00-05-44](https://user-images.githubusercontent.com/107256886/220963695-60d36617-92f5-4f1f-b658-4d99ec799c3d.png)
 
-Note: Because of the unit problem of rhino and blender, I scaled the model imported by blender by 0.1 by default. If scaling is not required, please delete the 30th line of code in the blender plug-in code!
+![Snipaste_2023-10-27_01-59-00](https://github.com/chenpaner/Rhino-to-blender/assets/107256886/ff41772d-5633-4963-aa2d-79d18d7a957f)
+
+
+中文：
+1,先安装Blender端的插件，安装后复制插件里的assets文件夹路径！
+
+
+2，安装rhino里的插件
+      拖动rename_obj_bylayer.rhp到rhino里就行了
+
+3，添加rhino里的按钮，修改巨集指令
+    RHINO 里新建一个按钮，然后shift右键按钮打开编辑！
+    
+    左键导出模型到blender  
+        在左键里复制下面内容：（记得把文件路径改为第一步复制的路径，记得在路径最后以\Rhino to Blender-mesh.obj结尾）
+!NoEcho
+ -_rename_objrhino
+ -_Export _GeometryOnly=_Yes _SaveTextures=_No _SaveNotes=_No _SaveSmall=_Yes
+"C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Rhino to Blender-mesh.obj"
+Geometry=Mesh  EndOfLine=CRLF  ExportRhinoObjectNames=ExportObjectsAsOBJObjects  ExportRhinoGroupOrLayerNames=ExportLayersAsOBJGroups  MergeNestedLayerGroupNames=No  SortByOBJGroups=Yes  ExportMaterialDefinitions=Yes  ChangeWhitespaceToUnderscores=No  UseDisplayColorForMaterial=Yes  YUp=Yes  WrapLongLines=No  WritePrecision=17  ExportMeshTextureCoordinates=Yes  ExportMeshVertexNormals=Yes  ExportMeshVertexColors=No  ExportOpenMeshes=Yes  ExportMeshAsTriangles=No  UseRenderMeshes=Yes  VertexWelding=Welded  SubDMeshing=FromSurface  SubDLevel=1  NgonMode=None
+enter
+
+
+    右键把模型导入到Rhino
+        右边复制下面内容：（记得把文件路径改为第一步复制的路径，记得在路径最后以\Blender to Rhino-mesh.obj结尾）
+!NoEcho -_Import
+"C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Blender to Rhino-mesh.obj"
+MapYtoZ=Yes
+enter
+
+English：
+1/First, install the plugin in Blender, and after installation, copy the path of the "assets" folder from the plugin!
+
+2/Install the plugin in Rhino
+ Just drag and drop "rename_obj_bylayer.rhp" into Rhino.
+
+3/Add a button in Rhino and modify the macro command
+ Create a new button in Rhino, then right-click the button and select "Edit"!
+
+ Left-click to export the model to Blender
+ Copy the following content in the left-click action (make sure to change the file path to the one copied in the first step, and make sure it ends with "\Rhino to Blender-mesh.obj"):
+
+!NoEcho
+-_rename_objrhino
+-_Export _GeometryOnly=_Yes _SaveTextures=_No _SaveNotes=_No _SaveSmall=_Yes
+"C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Rhino to Blender-mesh.obj"
+Geometry=Mesh  EndOfLine=CRLF  ExportRhinoObjectNames=ExportObjectsAsOBJObjects  ExportRhinoGroupOrLayerNames=ExportLayersAsOBJGroups  MergeNestedLayerGroupNames=No  SortByOBJGroups=Yes  ExportMaterialDefinitions=Yes  ChangeWhitespaceToUnderscores=No  UseDisplayColorForMaterial=Yes  YUp=Yes  WrapLongLines=No  WritePrecision=17  ExportMeshTextureCoordinates=Yes  ExportMeshVertexNormals=Yes  ExportMeshVertexColors=No  ExportOpenMeshes=Yes  ExportMeshAsTriangles=No  UseRenderMeshes=Yes  VertexWelding=Welded  SubDMeshing=FromSurface  SubDLevel=1  NgonMode=None
+enter
+
+  Right-click to import the model into Rhino
+  Copy the following content in the right-click action (make sure to change the file path to the one copied in the first step, and make sure it ends with "\Blender to Rhino-mesh.obj"):
+
+!NoEcho -_Import
+"C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Blender to Rhino-mesh.obj"
+MapYtoZ=Yes
+enter
