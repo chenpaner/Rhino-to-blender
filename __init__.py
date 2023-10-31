@@ -204,9 +204,9 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
                         empty.name = common_name
                         root_empty = empty
                         break
-                original_location =""
-                original_rotation=""
-                original_scale=""
+                original_location = None
+                original_rotation = None
+                original_scale = None
                 if root_empty is None:
                     bpy.ops.object.empty_add(type='CUBE', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
                     bpy.context.object.show_in_front = True
