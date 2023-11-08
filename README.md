@@ -25,8 +25,8 @@ Geometry=Mesh  EndOfLine=CRLF  ExportRhinoObjectNames=ExportObjectsAsOBJObjects 
 enter
 ```
 
-    右键把模型导入到Rhino
-        右边复制下面内容：（记得把文件路径改为第一步复制的路径，记得在路径最后以\Blender to Rhino-mesh.obj结尾）
+右键把模型从Blender里导入到Rhino
+右边复制下面内容：（记得把文件路径改为第一步复制的路径，记得在路径最后以\Blender to Rhino-mesh.obj结尾）
 ```
 !NoEcho -_Import
 "C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Blender to Rhino-mesh.obj"
@@ -55,7 +55,7 @@ Geometry=Mesh  EndOfLine=CRLF  ExportRhinoObjectNames=ExportObjectsAsOBJObjects 
 enter
 ```
 
-Right-click to import the model into RhinoCopy the following content in the right-click action (make sure to change the file path to the one copied in the first step, and make sure it ends with "\Blender to Rhino-mesh.obj"):
+Right-click to import the model into Rhino，Copy the following content in the right-click action (make sure to change the file path to the one copied in the first step, and make sure it ends with "\Blender to Rhino-mesh.obj"):
 ```
 !NoEcho -_Import
 "C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Blender to Rhino-mesh.obj"
