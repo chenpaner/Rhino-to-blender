@@ -34,7 +34,8 @@ MapYtoZ=Yes
 enter
 ```
 
-## English：[Video](https://youtu.be/peUmoLbUnKY)I made an English subtitle with Google Translate, remember to turn it on!
+## English：[YouToBe](https://youtu.be/peUmoLbUnKY)
+I made an English subtitle with Google Translate, remember to turn it on!
 
 1/First, install the plugin in Blender, and after installation, copy the path of the "assets" folder from the plugin!
 
