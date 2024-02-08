@@ -1,8 +1,8 @@
 bl_info = {
     "name": "Rhino to Blender",
     "author": "chenpaner",
-    "version": (1, 0, 0),
-    "blender": (2, 81, 0),
+    "version": (1, 1),
+    "blender": (3, 0, 0),
     "location": "View3D > Add > Add-Rhino&Export-Rhino",
     "description": "Rhino to Blender，Blender to Rhino",
     "warning": "",
@@ -26,6 +26,7 @@ class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
         ("1", "1.0(mm ⇉ m)", "Scale by 1.0"),
         ("0.1", "0.1(mm ⇉ cm)", "Scale by 0.1"),
         ("0.01", "0.01(mm ⇉ mm)", "Scale by 0.01"),
+        ("0.001", "0.001", "Scale by 0.001"),
     ]
     scale_option: bpy.props.EnumProperty(
         items=scale_options,
@@ -61,18 +62,13 @@ class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
             bpy.ops.object.select_all(action='DESELECT')
             scene_name = bpy.context.scene.name 
             bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection     
-            bpy.ops.import_scene.obj(
+            bpy.ops.wm.obj_import(
                 filepath=os.path.join(os.path.dirname(__file__), 'assets', 'Rhino to Blender-mesh.obj'),
-                axis_forward='-Z',
-                axis_up='Y',
+                forward_axis='NEGATIVE_Z',
+                up_axis='Y',
+                global_scale=scale_factor,
                 filter_glob="*.obj;*.mtl"
-            ) 
-            bpy.ops.transform.resize(
-                    value=(scale_factor, scale_factor, scale_factor),
-                    orient_type='GLOBAL',
-                    orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
-                    orient_matrix_type='GLOBAL'
-                )
+            )
             if self.apply_transform:
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
             bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
@@ -125,7 +121,14 @@ class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
                     if newww_name in existing_obj.name:
                         last_matching_obj = existing_obj
                 if last_matching_obj:
+                    obj.location = last_matching_obj.location
+                    obj.rotation_euler = last_matching_obj.rotation_euler
+                    obj.scale = last_matching_obj.scale
+                    materials_copy = obj.data.materials[:]
                     obj.data.materials.clear()  
+                    for material in materials_copy:
+                        if material.users == 0:
+                            bpy.data.materials.remove(material)
                     has_materials = False
                     for slot in last_matching_obj.material_slots:
                         if slot.material:
@@ -133,10 +136,16 @@ class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
                             obj.data.materials.append(new_material)
                             has_materials = True
                     if not has_materials:
-                        self.report({'INFO'}, "The last matching object has no materials.")
-            self.report({'INFO'}, f"Successfully imported {len(imported_objects)} models from {common_name1}.3dm.")
+                        self.report({'INFO'}, "The last matching object has no materials.\n同名的物体没材质")
+            static_string = "Imported {} models from {}.3dm."
+            translated_string = bpy.app.translations.pgettext(static_string)
+            formatted_string = translated_string.format(len(imported_objects), common_name1)
+            self.report({'INFO'}, formatted_string)
         else:
-            self.report({'ERROR'}, f"Fichier '{file_path}' does not exist. Please export it from Rhino first.")
+            static_string = "Fichier {} does not exist. Please export it from Rhino first."
+            translated_string = bpy.app.translations.pgettext(static_string)
+            formatted_string = translated_string.format(file_path)
+            self.report({'INFO'}, formatted_string)
         bpy.context.scene.cycles.preview_pause = False
         return {'FINISHED'}
 class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
@@ -149,6 +158,7 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
         ("1", "1.0(mm ⇉ m)", "Scale by 1.0"),
         ("0.1", "0.1(mm ⇉ cm)", "Scale by 0.1"),
         ("0.01", "0.01(mm ⇉ mm)", "Scale by 0.01"),
+        ("0.001", "0.001", "Scale by 0.001"),
     ]
     scale_option: bpy.props.EnumProperty(
         items=scale_options,
@@ -224,13 +234,13 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
                     bpy.context.view_layer.objects.active = None
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
-                    bpy.ops.import_scene.obj(
+                    bpy.ops.wm.obj_import(
                         filepath=os.path.join(os.path.dirname(__file__), 'assets', 'Rhino to Blender-mesh.obj'),
-                        axis_forward='-Z',
-                        axis_up='Y',
+                        forward_axis='NEGATIVE_Z',
+                        up_axis='Y',
+                        global_scale=scale_factor,
                         filter_glob="*.obj;*.mtl"
                     )
-                    bpy.ops.transform.resize(value=(scale_factor, scale_factor, scale_factor), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL')
                     if self.apply_transform:
                         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
@@ -272,7 +282,11 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
                             if newww_name in existing_obj.name:
                                 last_matching_obj = existing_obj
                         if last_matching_obj:
+                            materials_copy = obj.data.materials[:]
                             obj.data.materials.clear()  
+                            for material in materials_copy:
+                                if material.users == 0:
+                                    bpy.data.materials.remove(material)
                             has_materials = False
                             for slot in last_matching_obj.material_slots:
                                 if slot.material:
@@ -280,7 +294,7 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
                                     obj.data.materials.append(new_material)
                                     has_materials = True
                             if not has_materials:
-                                self.report({'INFO'}, "The last matching object has no materials.")
+                                self.report({'INFO'}, "The last matching object has no materials.\n同名的物体没材质")
                 except:
                     pass
             if original_location and original_rotation and original_scale:
@@ -293,15 +307,21 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
                 current_parent_empty.select_set(True)
                 bpy.ops.machin3.groupify()
             except Exception as e:
-                print("Only if the M3 plugin is installed will the root parent empty object be converted to an M3 empty object!")
+                print(bpy.app.translations.pgettext('Only if the M3 plugin is installed will the root parent empty object be converted to an M3 empty object!'))
             bpy.ops.object.select_all(action='DESELECT')
             for obj in imported_objects:
                 obj.select_set(True)
             bpy.context.view_layer.objects.active = obj
             obj.select_set(True)
-            self.report({'INFO'}, f"Imported {len(imported_objects)} models from {common_name1}.3dm.")
+            static_string = "Imported {} models from {}.3dm."
+            translated_string = bpy.app.translations.pgettext(static_string)
+            formatted_string = translated_string.format(len(imported_objects), common_name1)
+            self.report({'INFO'}, formatted_string)
         else:
-            self.report({'ERROR'}, f"Fichier '{file_path}' does not exist. Please export it from Rhino first.")
+            static_string = "Fichier {} does not exist. Please export it from Rhino first."
+            translated_string = bpy.app.translations.pgettext(static_string)
+            formatted_string = translated_string.format(file_path)
+            self.report({'INFO'}, formatted_string)
         bpy.context.scene.cycles.preview_pause = False
         return {'FINISHED'}
 def sna_add_to_view3d_mt_add_7D1A0(self, context):
@@ -315,8 +335,10 @@ class OBJECT_OT_add_objectexport(Operator, AddObjectHelper):
     bl_label = "Save Mesh Object"
     bl_options = {'REGISTER', 'UNDO'}
     def execute(self, context):        
-        print("Exporting...")
-        bpy.ops.export_scene.obj(filepath=os.path.join(os.path.dirname(__file__), 'assets', 'Blender to Rhino-mesh.obj'), use_selection=True,axis_forward='Y',axis_up='Z')
+        print("Exporting...")#bpy.ops.wm.obj_import
+        #bpy.ops.import_scene.obj bpy.ops.export_scene.obj bpy.ops.wm.obj_import bpy.ops.wm.obj_export
+        #bpy.ops.wm.obj_export()
+        bpy.ops.wm.obj_export(filepath=os.path.join(os.path.dirname(__file__), 'assets', 'Blender to Rhino-mesh.obj'), export_selected_objects=True, export_uv=True,up_axis='Y',forward_axis='Z')
         return {'FINISHED'}
 def sna_add_to_view3d_mt_export_7D1A0(self, context):
     preferences = context.preferences
@@ -334,9 +356,29 @@ class SNA_AddonPreferences_9F6AA(bpy.types.AddonPreferences):
     )
     def draw(self, context):
         layout = self.layout
-        layout.label(text='Please ensure that the root empty object or collection is under the scene root collection.If it is moved to another collection, a new collection or empty object will be automatically created.',icon='ERROR')
-        layout.label(text='请确保根空物体或者集合在场景根集合下,如果移动到其它集合下后会自动新建一个集合或者空物体!',icon='ERROR')
+        layout.label(text='1.Make sure the root empty object is placed under the scene·s root collection. If it·s moved to another collection, updating the import will automatically create a new root empty object.',icon='ERROR')
+        layout.label(text="2.If you need to make repeated changes to an object, please make sure it has a unique name in Rhino. Do not modify the name in Blender. This way, it will automatically recognize and update materials or positions, etc.", icon='ERROR')
+        layout.label(text="3.When using an empty object as the parent, try to limit changes to the root parent, and avoid applying all three transformations. This way, the imported objects will automatically align their positions during updates.", icon='ERROR')
+        layout.label(text="4.For objects imported as collections, after modifying the position, scale, or rotation of each object, try not to apply these transformations. This way, the imported objects will automatically align with the replaced objects during updates.", icon='ERROR')
         layout.prop(self, 'sna_show_export2rhino_')
+langs = {
+    'zh_CN': {
+        ('*', 'Only if the M3 plugin is installed will the root parent empty object be converted to an M3 empty object!'): '装了M3插件才会自动将空物体转为M3类型的父级空物体!',
+        ('*', 'Imported {} models from {}.3dm.'): '导入{}个物体从{}.3dm里.',
+        ('*', 'Fichier {} does not exist. Please export it from Rhino first.'): '文件{}不存在，请先从 Rhino 中导出。',
+        ('*', '1.Make sure the root empty object is placed under the scene·s root collection. If it·s moved to another collection, updating the import will automatically create a new root empty object.'): 
+        '1.请确保根空物体在场景根集合下,如果移动到其它集合下后更新导入会自动新建一个根空物体!',
+        ('*', '2.If you need to make repeated changes to an object, please make sure it has a unique name in Rhino. Do not modify the name in Blender. This way, it will automatically recognize and update materials or positions, etc.'): 
+        '2.如果某个物体是需要重复修改的请在rhino里确定它唯一的名字,不要在Blender里修改名字,这样才会自动识别自动更新材质或者位置等信息!',
+        ('*', '3.When using an empty object as the parent, try to limit changes to the root parent, and avoid applying all three transformations. This way, the imported objects will automatically align their positions during updates.'): 
+        '3.以空物体为父级的方式尽量只变化根父级,且不用应用三个变换,这样更新导入才会自动对齐位置',
+        ('*', '4.For objects imported as collections, after modifying the position, scale, or rotation of each object, try not to apply these transformations. This way, the imported objects will automatically align with the replaced objects during updates.'): 
+        '4.以集合方式导入的,修改每个物体的位置缩放旋转后尽量别应用这3个变换,这样更新导入后的物体才会自动对齐替换的物体',
+        ('*', 'Show Export2Rhino'): '在右键菜单里显示导出到Rhino',
+        ('Operator', 'Import4Rhino(coll)'): 'Rhino导入(集合)',
+        ('Operator', 'Import4Rhino(empt)'): 'Rhino导入(空物体)',
+    },
+}
 def register():
     import bpy.utils.previews
     global _icons
@@ -349,6 +391,7 @@ def register():
     bpy.types.VIEW3D_MT_add.append(sna_add_to_view3d_mt_add_7D1A0)
     bpy.types.VIEW3D_MT_add.append(sna_add_to_view3d_mt_export_7D1A0)
     bpy.utils.register_class(SNA_AddonPreferences_9F6AA)
+    bpy.app.translations.register(__name__, langs)
 def unregister():
     global _icons
     bpy.utils.previews.remove(_icons)
@@ -358,5 +401,6 @@ def unregister():
     bpy.types.VIEW3D_MT_add.remove(sna_add_to_view3d_mt_add_7D1A0)
     bpy.types.VIEW3D_MT_add.remove(sna_add_to_view3d_mt_export_7D1A0)
     bpy.utils.unregister_class(SNA_AddonPreferences_9F6AA)
+    bpy.app.translations.unregister(__name__)
 if __name__ == "__main__":
     register()
