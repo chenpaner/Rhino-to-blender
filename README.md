@@ -27,11 +27,13 @@ enter
 
 右键把模型从Blender里导入到Rhino
 右边复制下面内容：（记得把文件路径改为第一步复制的路径，记得在路径最后以\Blender to Rhino-mesh.obj结尾）
+2024.02.10 添加了熔并重复顶点的操作，导入完成后要手动框选导入的网格，或者运行选择最后生成的obj（'_SelLast）.
 ```
 !NoEcho -_Import
-"C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\Big addons\addons\Rhino to blender\assets\Blender to Rhino-mesh.obj"
+"C:\Users\CP\AppData\Roaming\Blender Foundation\Blender\4.0\scripts\addons\Rhino to blender\assets\Blender to Rhino-mesh.obj"
 MapYtoZ=Yes
 enter
+_WeldVertices
 ```
 
 ## English：[YouToBe](https://youtu.be/peUmoLbUnKY)
