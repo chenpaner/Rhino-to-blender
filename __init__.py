@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Rhino to Blender",
     "author": "chenpaner",
-    "version": (1, 1),
+    "version": (1, 1, 1),
     "blender": (3, 0, 0),
     "location": "View3D > Add > Add-Rhino&Export-Rhino",
     "description": "Rhino to Blender，Blender to Rhino",
@@ -16,6 +16,12 @@ from bpy.types import Operator
 from bpy.props import FloatVectorProperty
 from bpy_extras.object_utils import AddObjectHelper, object_data_add
 from mathutils import Vector
+from bpy.props import (StringProperty,
+                       BoolProperty,
+                       EnumProperty,
+                       IntProperty,
+                       FloatProperty)
+
 class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
     """导入Rhino Mesh对象"""
     bl_idname = "mesh.add_object_coll"
@@ -40,19 +46,27 @@ class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
         default=True
     )
     def invoke(self, context, event):
+
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
+
     def draw(self, context):
         layout = self.layout
-        layout.use_property_split = True 
-        layout.use_property_decorate = False  
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=True)
-        col = flow.column(align=False)
-        col.ui_units_x = 7
-        row_30B0D = col.row(heading='', align=True)
-        op = row_30B0D.prop(self, "apply_transform")
-        row_40B0D = col.row(heading='', align=True)
-        op = row_40B0D.prop(self, "scale_option")
+        file_path = os.path.join(os.path.dirname(__file__), 'assets', 'Rhino to Blender-mesh.obj')
+        if os.path.exists(file_path):
+            layout.use_property_split = True 
+            layout.use_property_decorate = False  
+            flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=True)
+            col = flow.column(align=False)
+            col.ui_units_x = 7
+            row_30B0D = col.row(heading='', align=True)
+            op = row_30B0D.prop(self, "apply_transform")
+            row_40B0D = col.row(heading='', align=True)
+            op = row_40B0D.prop(self, "scale_option")
+        else:
+            layout.alert = True
+            layout.label(text='No Found Rhino to Blender-mesh.obj')
+
     def execute(self, context): 
         bpy.context.scene.cycles.preview_pause = True
         scale_factor = float(self.scale_option)  
@@ -148,6 +162,7 @@ class OBJECT_OT_add_object_coll(Operator, AddObjectHelper):
             self.report({'INFO'}, formatted_string)
         bpy.context.scene.cycles.preview_pause = False
         return {'FINISHED'}
+
 class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
     """导入Rhino Mesh对象"""
     bl_idname = "mesh.add_object_empt"
@@ -174,17 +189,24 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
     def invoke(self, context, event):
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
+
     def draw(self, context):
         layout = self.layout
-        layout.use_property_split = True 
-        layout.use_property_decorate = False  
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=True)
-        col = flow.column(align=False)
-        col.ui_units_x = 7
-        row_30B0D = col.row(heading='', align=True)
-        op = row_30B0D.prop(self, "apply_transform")
-        row_40B0D = col.row(heading='', align=True)
-        op = row_40B0D.prop(self, "scale_option")
+        file_path = os.path.join(os.path.dirname(__file__), 'assets', 'Rhino to Blender-mesh.obj')
+        if os.path.exists(file_path):
+            layout.use_property_split = True 
+            layout.use_property_decorate = False  
+            flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=True)
+            col = flow.column(align=False)
+            col.ui_units_x = 7
+            row_30B0D = col.row(heading='', align=True)
+            op = row_30B0D.prop(self, "apply_transform")
+            row_40B0D = col.row(heading='', align=True)
+            op = row_40B0D.prop(self, "scale_option")
+        else:
+            layout.alert = True
+            layout.label(text='No Found Rhino to Blender-mesh.obj')
+
     def execute(self, context):
         bpy.context.scene.cycles.preview_pause = True
         bpy.context.view_layer.objects.active = None
@@ -324,22 +346,86 @@ class OBJECT_OT_add_object_empt(Operator, AddObjectHelper):
             self.report({'INFO'}, formatted_string)
         bpy.context.scene.cycles.preview_pause = False
         return {'FINISHED'}
+
 def sna_add_to_view3d_mt_add_7D1A0(self, context):
     if not (False):
         layout = self.layout
         op = layout.operator('mesh.add_object_coll', text='Import4Rhino(coll)', icon_value=_icons['SmallTile.png'].icon_id, emboss=True, depress=False)
         op = layout.operator('mesh.add_object_empt', text='Import4Rhino(empt)', icon_value=_icons['SmallTile.png'].icon_id, emboss=True, depress=False)
+
 class OBJECT_OT_add_objectexport(Operator, AddObjectHelper):
     """导出到Rhino Mesh对象"""
     bl_idname = "mesh.add_objectexport"
-    bl_label = "Save Mesh Object"
+    bl_label = "Export Mesh Obj"
     bl_options = {'REGISTER', 'UNDO'}
-    def execute(self, context):        
+
+    def execute(self, context): 
+        addon_prefs = context.preferences.addons[__name__].preferences      
         print("Exporting...")#bpy.ops.wm.obj_import
-        #bpy.ops.import_scene.obj bpy.ops.export_scene.obj bpy.ops.wm.obj_import bpy.ops.wm.obj_export
-        #bpy.ops.wm.obj_export()
-        bpy.ops.wm.obj_export(filepath=os.path.join(os.path.dirname(__file__), 'assets', 'Blender to Rhino-mesh.obj'), export_selected_objects=True, export_uv=True,up_axis='Y',forward_axis='Z')
+        bpy.ops.wm.obj_export(
+            filepath=os.path.join(os.path.dirname(__file__), 'assets', 'Blender to Rhino-mesh.obj'),
+            export_selected_objects=addon_prefs.export_selected_objects,
+            global_scale=addon_prefs.global_scale,
+            forward_axis=addon_prefs.forward_axis,
+            up_axis=addon_prefs.up_axis,
+            apply_modifiers=addon_prefs.apply_modifiers,
+            export_eval_mode=addon_prefs.export_eval_mode,
+            export_uv=addon_prefs.export_uv,
+            export_normals=addon_prefs.export_normals,
+            export_colors=addon_prefs.export_colors,
+            export_triangulated_mesh=addon_prefs.export_triangulated_mesh,
+            export_curves_as_nurbs=addon_prefs.export_curves_as_nurbs,
+            export_materials=addon_prefs.export_materials,
+            export_pbr_extensions=addon_prefs.export_pbr_extensions,
+            path_mode=addon_prefs.path_mode,
+            export_object_groups=addon_prefs.export_object_groups,
+            export_material_groups=addon_prefs.export_material_groups,
+            export_vertex_groups=addon_prefs.export_vertex_groups,
+            export_smooth_groups=addon_prefs.export_smooth_groups,
+            smooth_group_bitflags=addon_prefs.smooth_group_bitflags,
+        )
         return {'FINISHED'}
+
+    def invoke(self, context, event):
+        #return context.window_manager.invoke_props_dialog(self)
+        return context.window_manager.invoke_props_dialog(self, width=300)
+
+    def draw(self, context):
+        layout = self.layout
+        addon_prefs = context.preferences.addons[__name__].preferences
+        row = layout.row()
+        box1 = row.box()
+        box1.prop(addon_prefs, "export_selected_objects")
+        box1.prop(addon_prefs, "global_scale")
+        box1.prop(addon_prefs, "forward_axis")
+        box1.prop(addon_prefs, "up_axis")
+        box1.prop(addon_prefs, "apply_modifiers")
+        box1.prop(addon_prefs, "export_eval_mode")
+
+
+        box = box1.row(align=True)
+        box = box.box()
+        box.prop(addon_prefs, "export_uv")
+        box.prop(addon_prefs, "export_normals")
+        box.prop(addon_prefs, "export_colors")
+        box.prop(addon_prefs, "export_triangulated_mesh")
+        box.prop(addon_prefs, "export_curves_as_nurbs")
+
+        box = box1.row(align=True)
+        box = box.box()
+        box.prop(addon_prefs, "export_materials")
+        box.prop(addon_prefs, "export_pbr_extensions")
+        box.prop(addon_prefs, "path_mode")
+
+        box = box1.row(align=True)
+        box = box.box()
+        box.prop(addon_prefs, "export_object_groups")
+        box.prop(addon_prefs, "export_material_groups")
+        box.prop(addon_prefs, "export_vertex_groups")
+        box.prop(addon_prefs, "export_smooth_groups")
+        if addon_prefs.export_smooth_groups:
+            box.prop(addon_prefs, "smooth_group_bitflags")
+
 def sna_add_to_view3d_mt_export_7D1A0(self, context):
     preferences = context.preferences
     addon_prefs = preferences.addons[__name__].preferences
@@ -347,6 +433,7 @@ def sna_add_to_view3d_mt_export_7D1A0(self, context):
         layout = self.layout
         if addon_prefs.sna_show_export2rhino_:
             op = layout.operator('mesh.add_objectexport', text='Export2Rhino', icon_value=_icons['MediumTile.png'].icon_id, emboss=True, depress=False)
+
 class SNA_AddonPreferences_9F6AA(bpy.types.AddonPreferences):
     bl_idname = __name__
     sna_show_export2rhino_: bpy.props.BoolProperty(
@@ -354,6 +441,139 @@ class SNA_AddonPreferences_9F6AA(bpy.types.AddonPreferences):
         description='Whether to display the export button in the right-click menu',
         default=False
     )
+
+   #到处obj的选项
+    # Properties for export settings
+    export_selected_objects: BoolProperty(
+        name="Export Selected Only", # 导出选定的对象
+        description="Export only selected objects instead of all supported objects", # 导出选定的对象而不是所有受支持的对象
+        default=True
+    )
+    global_scale: FloatProperty(
+        name="Scale", # 缩放
+        description="Value by which to enlarge or shrink the objects with respect to the world’s origin", # 与世界原点相关的用于放大或缩小对象的值
+        default=1.0,
+        min=0.0001,
+        max=10000
+    )
+    forward_axis: EnumProperty(
+        name="Forward Axis", # 正向轴
+        description="Forward Axis", # 正向轴
+        items=(
+            ('X', "X", "Positive X axis."),
+            ('Y', "Y", "Positive Y axis."),
+            ('Z', "Z", "Positive Z axis."),
+            ('NEGATIVE_X', "-X", "Negative X axis."),
+            ('NEGATIVE_Y', "-Y", "Negative Y axis."),
+            ('NEGATIVE_Z', "-Z", "Negative Z axis.")
+        ),
+        default='NEGATIVE_Z'
+    )
+    up_axis: EnumProperty(
+        name="Up Axis", # 上轴
+        description="Up Axis", # 上轴
+        items=(
+            ('X', "X", "Positive X axis."),
+            ('Y', "Y", "Positive Y axis."),
+            ('Z', "Z", "Positive Z axis."),
+            ('NEGATIVE_X', "-X", "Negative X axis."),
+            ('NEGATIVE_Y', "-Y", "Negative Y axis."),
+            ('NEGATIVE_Z', "-Z", "Negative Z axis.")
+        ),
+        default='Y'
+    )
+    
+    apply_modifiers: BoolProperty(
+        name="Apply Modifiers", # 应用修饰符
+        description="Apply modifiers to exported meshes", # 将修饰符应用到导出的网格
+        default=True
+    )
+    export_eval_mode: EnumProperty(
+        name="Object Properties", # 对象属性
+        description="Determines properties like object visibility, modifiers etc., where they differ for Render and Viewport", # 确定对象属性（如对象可见性、修饰器等）在渲染和视口中的差异
+        items=(
+            ('DAG_EVAL_RENDER', "Render", "Export objects as they appear in render."), # 将对象导出为它们在渲染中出现的样子
+            ('DAG_EVAL_VIEWPORT', "Viewport", "Export objects as they appear in the viewport.") # 将对象导出为它们在视口中出现的样子
+        ),
+        default='DAG_EVAL_RENDER'
+    )
+    
+    export_uv: BoolProperty(
+        name="Export UVs", # 导出UV
+        description="Export UVs", # 导出UV
+        default=True
+    )
+    export_normals: BoolProperty(
+        name="Export Normals", # 导出法线
+        description="Export per-face normals if the face is flat-shaded, per-face-per-loop normals if smooth-shaded", # 如果面是平面着色的，导出每个面的法线；如果是光滑着色的，导出每个面的每个环的法线
+        default=True
+    )
+    export_colors: BoolProperty(
+        name="Export Colors", # 导出颜色
+        description="Export per-vertex colors", # 导出每个顶点的颜色
+        default=True
+    )
+    export_triangulated_mesh: BoolProperty(
+        name="Export Triangulated Mesh", # 导出三角网格
+        description="All ngons with four or more vertices will be triangulated. Meshes in the scene will not be affected.", # 所有具有四个或更多顶点的ngon将被三角化。场景中的网格不受影响。
+        default=False
+    )
+    export_curves_as_nurbs: BoolProperty(
+        name="Export Curves as NURBS", # 将曲线导出为NURBS
+        description="Export curves in parametric form instead of exporting as mesh", # 导出曲线为参数形式，而不是导出为网格
+        default=False
+    )
+
+    export_materials: BoolProperty(
+        name="Export Materials", # 导出材质
+        description="Export MTL library. There must be a Principled-BSDF node for image textures to be exported to the MTL file", # 导出MTL库。必须有一个Principled-BSDF节点才能将图像纹理导出到MTL文件中
+        default=True
+    )
+    export_pbr_extensions: BoolProperty(
+        name="Export Materials with PBR Extensions", # 导出带有PBR扩展的材质
+        description="Export MTL library using PBR extensions (roughness, metallic, sheen, coat, anisotropy, transmission)", # 使用PBR扩展（粗糙度、金属、光泽、涂层、各向异性、传输）导出MTL库
+        default=False
+    )
+    path_mode: EnumProperty(
+        name="Path Mode", # 路径模式
+        description="Method used to reference paths", # 用于引用路径的方法
+        items=(
+            ('AUTO', "Auto", "Use relative paths with subdirectories only."), # 仅使用子目录的相对路径
+            ('ABSOLUTE', "Absolute", "Always write absolute paths."), # 始终写入绝对路径
+            ('RELATIVE', "Relative", "Write relative paths where possible."), # 在可能的情况下写入相对路径
+            ('MATCH', "Match", "Match absolute/relative setting with input path."), # 将绝对/相对设置与输入路径匹配
+            ('STRIP', "Strip", "Write filename only."), # 仅写入文件名
+            ('COPY', "Copy", "Copy the file to the destination path.") # 将文件复制到目标路径
+        ),
+        default='AUTO'
+    )
+    
+    export_object_groups: BoolProperty(
+        name="Export Object Groups", # 导出对象组
+        description="Append mesh name to object name, separated by a ‘_’", # 将网格名称追加到对象名称，用“_”分隔
+        default=False
+    )
+    export_material_groups: BoolProperty(
+        name="Export Material Groups", # 导出材质组
+        description="Generate an OBJ group for each part of a geometry using a different material", # 使用不同的材质为几何体的每个部分生成一个OBJ组
+        default=False
+    )
+    export_vertex_groups: BoolProperty(
+        name="Export Vertex Groups", # 导出顶点组
+        description="Export the name of the vertex group of a face. It is approximated by choosing the vertex group with the most members among the vertices of a face", # 导出面的顶点组的名称。通过选择一个面的顶点中成员最多的顶点组来近似
+        default=False
+    )
+    export_smooth_groups: BoolProperty(
+        name="Export Smooth Groups", # 导出平滑组
+        description="Every smooth-shaded face is assigned group “1” and every flat-shaded face “off”", # 每个光滑着色的面分配给组“1”，每个平面着色的面“关闭”
+        default=False
+    )
+    smooth_group_bitflags: BoolProperty(
+        name="Generate Bitflags for Smooth Groups", # 为平滑组生成位标志
+        description="Generate Bitflags for Smooth Groups", # 为平滑组生成位标志
+        default=False
+    )
+   #
     def draw(self, context):
         layout = self.layout
         layout.label(text='1.Make sure the root empty object is placed under the scene·s root collection. If it·s moved to another collection, updating the import will automatically create a new root empty object.',icon='ERROR')
@@ -361,7 +581,58 @@ class SNA_AddonPreferences_9F6AA(bpy.types.AddonPreferences):
         layout.label(text="3.When using an empty object as the parent, try to limit changes to the root parent, and avoid applying all three transformations. This way, the imported objects will automatically align their positions during updates.", icon='ERROR')
         layout.label(text="4.For objects imported as collections, after modifying the position, scale, or rotation of each object, try not to apply these transformations. This way, the imported objects will automatically align with the replaced objects during updates.", icon='ERROR')
         layout.prop(self, 'sna_show_export2rhino_')
+        if self.sna_show_export2rhino_:
+            row = layout.row()
+            box1 = row.box()
+            box1.prop(self, "export_selected_objects")
+            box1.prop(self, "global_scale")
+            box1.prop(self, "forward_axis")
+            box1.prop(self, "up_axis")
+            box1.prop(self, "apply_modifiers")
+            box1.prop(self, "export_eval_mode")
+
+
+            box = box1.row(align=True)
+            box = box.box()
+            box.prop(self, "export_uv")
+            box.prop(self, "export_normals")
+            box.prop(self, "export_colors")
+            box.prop(self, "export_triangulated_mesh")
+            box.prop(self, "export_curves_as_nurbs")
+
+            box = box1.row(align=True)
+            box = box.box()
+            box.prop(self, "export_materials")
+            box.prop(self, "export_pbr_extensions")
+            box.prop(self, "path_mode")
+
+            box = box1.row(align=True)
+            box = box.box()
+            box.prop(self, "export_object_groups")
+            box.prop(self, "export_material_groups")
+            box.prop(self, "export_vertex_groups")
+            box.prop(self, "export_smooth_groups")
+            if self.export_smooth_groups:
+                box.prop(self, "smooth_group_bitflags")
+
 langs = {
+    'zh_HANS': {
+        ('*', 'Only if the M3 plugin is installed will the root parent empty object be converted to an M3 empty object!'): '装了M3插件才会自动将空物体转为M3类型的父级空物体!',
+        ('*', 'Imported {} models from {}.3dm.'): '导入{}个物体从{}.3dm里.',
+        ('*', 'Fichier {} does not exist. Please export it from Rhino first.'): '文件{}不存在，请先从 Rhino 中导出。',
+        ('*', '1.Make sure the root empty object is placed under the scene·s root collection. If it·s moved to another collection, updating the import will automatically create a new root empty object.'): 
+        '1.请确保根空物体在场景根集合下,如果移动到其它集合下后更新导入会自动新建一个根空物体!',
+        ('*', '2.If you need to make repeated changes to an object, please make sure it has a unique name in Rhino. Do not modify the name in Blender. This way, it will automatically recognize and update materials or positions, etc.'): 
+        '2.如果某个物体是需要重复修改的请在rhino里确定它唯一的名字,不要在Blender里修改名字,这样才会自动识别自动更新材质或者位置等信息!',
+        ('*', '3.When using an empty object as the parent, try to limit changes to the root parent, and avoid applying all three transformations. This way, the imported objects will automatically align their positions during updates.'): 
+        '3.以空物体为父级的方式尽量只变化根父级,且不用应用三个变换,这样更新导入才会自动对齐位置',
+        ('*', '4.For objects imported as collections, after modifying the position, scale, or rotation of each object, try not to apply these transformations. This way, the imported objects will automatically align with the replaced objects during updates.'): 
+        '4.以集合方式导入的,修改每个物体的位置缩放旋转后尽量别应用这3个变换,这样更新导入后的物体才会自动对齐替换的物体',
+        ('*', 'Show Export2Rhino'): '在右键菜单里显示导出到Rhino',
+        ('Operator', 'Import4Rhino(coll)'): 'Rhino导入(集合)',
+        ('Operator', 'Import4Rhino(empt)'): 'Rhino导入(空物体)',
+    },
+
     'zh_CN': {
         ('*', 'Only if the M3 plugin is installed will the root parent empty object be converted to an M3 empty object!'): '装了M3插件才会自动将空物体转为M3类型的父级空物体!',
         ('*', 'Imported {} models from {}.3dm.'): '导入{}个物体从{}.3dm里.',
