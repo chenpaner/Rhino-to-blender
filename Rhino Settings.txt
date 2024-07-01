@@ -1,0 +1,15 @@
+  RHINO 里新建一个按钮，然后shift右键按钮打开编辑！
+  ~~~~~~~~~~~
+  
+在blender里安装插件后直接在插件设置页面里复制命令后到Rhino里粘贴，导出obj位置路径已经自动设置好了，不用再手动修改
+
+想要手动修改rhino里物体的名字 （而不是根据图层名自动加个编号），先选中要修改的物体名，然后输入rename_selected_obj_for_blender指令 然后输入名字后回车
+
+
+
+  Create a new button in RHINO, and then right-click the shift button to open the edit!
+  ~~~~~~~~~~~
+  
+After installing the plug-in in blender, copy the command directly on the plug-in settings page and paste it in Rhino. The export obj location path has been automatically set, and there is no need to modify it manually.
+
+To manually modify the name of the object in the rhino (instead of automatically adding a number according to the layer name), first select the object name you want to modify, then enter the" rename_selected_obj_for_blender "command, then enter the name and enter
