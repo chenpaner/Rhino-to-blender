@@ -16,8 +16,8 @@ Change the plugin name to Link To Rhino ,for comply with blender's Terms of Serv
 
 # Installation
 
-- **中文：[Video](https://www.bilibili.com/video/BV1cH4y1A7Fc/?vd_source=aabd4ea827264740eabbeec9857d3286)
-- **En：[Video](https://blenderartists.org/t/free-addon-rhino-to-blender-quickly-export-rhino-models-to-blender/1489621/3?u=chen-pan)
+- 中文：[Video](https://www.bilibili.com/video/BV1cH4y1A7Fc/?vd_source=aabd4ea827264740eabbeec9857d3286)
+- En：[Video](https://blenderartists.org/t/free-addon-rhino-to-blender-quickly-export-rhino-models-to-blender/1489621/3?u=chen-pan)
 
 # Change Log
 
