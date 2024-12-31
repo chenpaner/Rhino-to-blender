@@ -1,4 +1,4 @@
-## Please go to the blender plug-in website to download the new version.[链接](https://extensions.blender.org/approval-queue/rhino-to-blender/)
+## ~~Please go to the blender plug-in website to download the new version.[链接](https://extensions.blender.org/approval-queue/rhino-to-blender/)~~
 
 ## And download rename_obj_bylayer.rhp in there！
 
